@@ -22,7 +22,10 @@ final class SimulationViewModel: ObservableObject {
     /// Velocity as a fraction of speed of light
     @Published var velocityFractionOfC: Double = 0.0 {
         didSet{
-            velocityFractionOfC = clampVelocity(velocityFractionOfC)
+            let clamped = clampVelocity(velocityFractionOfC)
+            if velocityFractionOfC != clamped {
+                velocityFractionOfC = clamped
+            }
         }
     }
     
@@ -57,6 +60,11 @@ final class SimulationViewModel: ObservableObject {
         earthTime = 0
         travelerTime = 0
         lastUpdate = nil
+    }
+    
+    func tick(){
+        let now = Date()
+        update(currentDate: now)
     }
     
     // MARK: - Helpers
