@@ -8,6 +8,12 @@
 import Foundation
 import Combine
 
+enum SimulationMode{
+    case running
+    case paused
+}
+
+
 //MARK: Simulation ViewModel
 
 @MainActor
@@ -29,20 +35,37 @@ final class SimulationViewModel: ObservableObject {
         }
     }
     
+    @Published private(set) var mode:SimulationMode = .running
+    
     //MARK: - Internal State
     
     /// Last updated time
     private var lastUpdate: Date?
     
+    var velocity: Double{
+        velocityFractionOfC * PhysicalConstants.speedOfLight
+    }
+    
     // MARK: - Logic
     
     /// Advances the simulation using real elasped time
     func update(currentDate: Date) {
+        
+        guard mode == .running else{
+            lastUpdate = currentDate
+            return
+        }
+        
         let delta = currentDate.timeIntervalSince(lastUpdate ?? currentDate)
         lastUpdate = currentDate
         
         guard delta > 0 else { return }
         
+        advance(by: delta)
+    }
+    
+    /// Deterministic Advancement
+    func advance(by delta: TimeInterval){
         /// Advance earth time
         earthTime += delta
         
@@ -50,21 +73,42 @@ final class SimulationViewModel: ObservableObject {
         let velocity = velocityFractionOfC * PhysicalConstants.speedOfLight
         
         /// Advance traveler time using relativistic dilation
-        let dilatedDelta = RelativityEngine.dilatedTime(earthDelta: delta, velocity: velocity)
+        let dilatedDelta = RelativityEngine.dilatedTime(
+            earthDelta: delta,
+            velocity: velocity
+        )
         
         travelerTime += dilatedDelta
+    }
+    
+    /// Lorentz length contraction factor (0 < factor ≤ 1)
+    var lengthContraction: Double{
+        let velocity = velocityFractionOfC * PhysicalConstants.speedOfLight
+        return RelativityEngine.lengthContractionFactor(for: velocity)
+    }
+    //MARK: - Controls
+    
+    func paused(){
+        mode = .paused
+        
+    }
+    
+    func resume(){
+        lastUpdate = Date()
+        mode = .running
+    }
+    
+    /// Fixed Step: 1 sec of earth time
+    func step(){
+        advance(by: 1.0)
     }
     
     /// Reset the simulation
     func reset(){
         earthTime = 0
         travelerTime = 0
+        mode = .paused
         lastUpdate = nil
-    }
-    
-    func tick(){
-        let now = Date()
-        update(currentDate: now)
     }
     
     // MARK: - Helpers
@@ -73,3 +117,4 @@ final class SimulationViewModel: ObservableObject {
         min(max(value, 0), PhysicalLimits.maxVelocityFractionOfC)
     }
 }
+

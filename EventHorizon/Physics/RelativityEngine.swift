@@ -32,4 +32,11 @@ struct RelativityEngine {
         return earthDelta / gamma
     }
     
+    // MARK: - Lorentz Length Contraction
+    ///Lorentz length contraction is a phenomenon from Einstein's special relativity where an object moving at a significant fraction of the speed of light 
+    ///appears shorter to a stationary observer, but only in the direction of its motion; the effect becomes noticeable only at relativistic speeds
+    static func lengthContractionFactor(for velocity: Double) -> Double {
+        let gamma = gamma(for: velocity)
+        return 1.0 / gamma
+    }
 }

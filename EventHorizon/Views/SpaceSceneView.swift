@@ -10,26 +10,30 @@ import SwiftUI
 struct SpaceSceneView: View {
     
     @StateObject private var viewModel = SimulationViewModel()
+    private let stars = StarFieldGenerator.generate(count: 800)
     
     var body: some View {
         TimelineView(.animation) { timeline in
-            ZStack{
+            ZStack {
                 Color.black.ignoresSafeArea()
                 
-                VStack(spacing:24){
+                StarfieldView(
+                    stars: stars,
+                    velocityFraction: viewModel.velocityFractionOfC
+                )
+                
+                
+                
+                VStack(spacing: 24) {
+                    ClockView(title: "Earth Time", time: viewModel.earthTime)
+                    ClockView(title: "Traveler Time", time: viewModel.travelerTime)
                     
-                    ClockView(
-                        title: "Earth Time",
-                        time: viewModel.earthTime
-                    )
-                    
-                    ClockView(
-                        title: "Traveler Time",
-                        time: viewModel.travelerTime
+                    SpaceAxisView(
+                        contractionFactor: viewModel.lengthContraction
                     )
                     
                     velocityControl
-                    
+                    controlPannel
                 }
             }
             .task(id: timeline.date){
@@ -50,6 +54,30 @@ struct SpaceSceneView: View {
             )
         }
         .padding(.horizontal)
+    }
+    
+    private var controlPannel: some View{
+        HStack(spacing: 16){
+            
+            Button("Pause"){
+                viewModel.paused()
+            }
+            .disabled(viewModel.mode == .paused)
+            
+            Button("Resume"){
+                viewModel.resume()
+            }
+            .disabled(viewModel.mode == .running)
+            
+            Button("Step +1s"){
+                viewModel.step()
+            }
+            
+            Button("Reset"){
+                viewModel.reset()
+            }
+            
+        }
     }
 }
 
