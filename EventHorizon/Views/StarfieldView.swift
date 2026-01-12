@@ -11,6 +11,7 @@ struct StarfieldView: View {
     
     let stars:[Star]
     let velocityFraction: Double
+    let earthTime: TimeInterval
     
     var body: some View {
         Canvas{ context, size in
@@ -23,18 +24,25 @@ struct StarfieldView: View {
                 let baseX = center.x + star.position.x * size.width * 0.5
                 let baseY = center.y + star.position.y * size.height * 0.5
                 
-                ///realistic outward movement
-                let motion = velocityFraction * 600 * (1 / star.depth)
-                
-                let dx = (baseX - center.x) / size.width
-                let dy = (baseY - center.y) / size.height
+                ///speed scales with velocity and depth
+                let speed = velocityFraction * 300 * (1 / star.depth)
                 
                 
-                let x = baseX + dx * motion
-                let y = baseY + dy * motion
+                let travel = speed * earthTime
+                
+                let wrappedTravel = travel.truncatingRemainder(
+                    dividingBy: max(size.width, size.height)
+                )
+                
+                /// Continuious movement using time
+                let offsetX = star.direction.dx * wrappedTravel
+                let offsetY = star.direction.dy * wrappedTravel
+                
+                let x = baseX + offsetX
+                let y = baseY + offsetY
                 
                 let opacity = max(0.3, 1 - star.depth)
-                let radius = max(0.5, 2.5 * (1 - star.depth))
+                let radius = max(0.6, 2.8 * (1 - star.depth))
                 
                 let rect = CGRect(
                     x: x,

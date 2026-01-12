@@ -19,7 +19,8 @@ struct SpaceSceneView: View {
                 
                 StarfieldView(
                     stars: stars,
-                    velocityFraction: viewModel.velocityFractionOfC
+                    velocityFraction: viewModel.velocityFractionOfC,
+                    earthTime: viewModel.earthTime
                 )
                 
                 
@@ -28,9 +29,9 @@ struct SpaceSceneView: View {
                     ClockView(title: "Earth Time", time: viewModel.earthTime)
                     ClockView(title: "Traveler Time", time: viewModel.travelerTime)
                     
-                    SpaceAxisView(
-                        contractionFactor: viewModel.lengthContraction
-                    )
+//                    SpaceAxisView(
+//                        contractionFactor: viewModel.lengthContraction
+//                    )
                     
                     velocityControl
                     controlPannel
