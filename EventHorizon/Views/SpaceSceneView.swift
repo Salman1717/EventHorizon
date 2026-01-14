@@ -9,48 +9,45 @@ import SwiftUI
 
 struct SpaceSceneView: View {
     
-    @StateObject private var viewModel = SimulationViewModel()
-    private let stars = StarFieldGenerator.generate(count: 800)
+    @StateObject private var simVM = SimulationViewModel()
+    @StateObject private var starfieldVM = StarfieldViewModel(starCount: 800)
     
     var body: some View {
         TimelineView(.animation) { timeline in
             ZStack {
                 Color.black.ignoresSafeArea()
                 
-                StarfieldView(
-                    stars: stars,
-                    velocityFraction: viewModel.velocityFractionOfC,
-                    earthTime: viewModel.earthTime
-                )
+                StarfieldView(stars: starfieldVM.stars, velocityFractionOfC: simVM.velocityFractionOfC, earthTime: simVM.earthTime)
+                
                 
                 
                 
                 VStack(spacing: 24) {
-                    ClockView(title: "Earth Time", time: viewModel.earthTime)
-                    ClockView(title: "Traveler Time", time: viewModel.travelerTime)
+                    ClockView(title: "Earth Time", time: simVM.earthTime)
+                    ClockView(title: "Traveler Time", time: simVM.travelerTime)
                     
-//                    SpaceAxisView(
-//                        contractionFactor: viewModel.lengthContraction
-//                    )
+                    //                    SpaceAxisView(
+                    //                        contractionFactor: viewModel.lengthContraction
+                    //                    )
                     
                     velocityControl
                     controlPannel
                 }
             }
             .task(id: timeline.date){
-                viewModel.update(currentDate: timeline.date)
+                simVM.update(currentDate: timeline.date)
             }
         }
     }
     
     private var velocityControl: some View{
         VStack(spacing: 8){
-            Text("Velocity: \(String(format: "%.3f", viewModel.velocityFractionOfC)) c")
+            Text("Velocity: \(String(format: "%.3f", simVM.velocityFractionOfC)) c")
                 .font(.caption)
                 .foregroundStyle(.secondary)
             
             Slider(
-                value: $viewModel.velocityFractionOfC,
+                value: $simVM.velocityFractionOfC,
                 in: 0...PhysicalLimits.maxVelocityFractionOfC
             )
         }
@@ -61,21 +58,21 @@ struct SpaceSceneView: View {
         HStack(spacing: 16){
             
             Button("Pause"){
-                viewModel.paused()
+                simVM.paused()
             }
-            .disabled(viewModel.mode == .paused)
+            .disabled(simVM.mode == .paused)
             
-            Button("Resume"){
-                viewModel.resume()
+            Button("Resume"){ 
+                simVM.resume()
             }
-            .disabled(viewModel.mode == .running)
+            .disabled(simVM.mode == .running)
             
             Button("Step +1s"){
-                viewModel.step()
+                simVM.step()
             }
             
             Button("Reset"){
-                viewModel.reset()
+                simVM.reset()
             }
             
         }

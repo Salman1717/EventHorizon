@@ -9,7 +9,10 @@ import Foundation
 
 struct Star: Identifiable{
     let id = UUID()
-    let position: CGPoint  ///normalized (-1..1)
-    let direction: CGVector
+    
+    var position: CGPoint  ///normalized (-1..1)
+    
+    var direction: CGVector
+    
     let depth: Double // (0) Near -> (1)Far
 }

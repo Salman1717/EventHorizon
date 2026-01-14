@@ -9,32 +9,33 @@ import SwiftUI
 
 struct StarfieldView: View {
     
-    let stars:[Star]
-    let velocityFraction: Double
+    let stars: [Star]
+    let velocityFractionOfC: Double
     let earthTime: TimeInterval
     
     var body: some View {
-        Canvas{ context, size in
+        Canvas { context, size in
             
-            let center = CGPoint(x: (size.width / 2), y: (size.height / 2))
+            let center = CGPoint(
+                x: size.width / 2,
+                y: size.height / 2
+            )
             
-            for star in stars{
+            let maxDimension = max(size.width, size.height)
+            
+            for star in stars {
                 
-                /// Base position
+                // Base position (static distribution)
                 let baseX = center.x + star.position.x * size.width * 0.5
                 let baseY = center.y + star.position.y * size.height * 0.5
                 
-                ///speed scales with velocity and depth
-                let speed = velocityFraction * 300 * (1 / star.depth)
-                
-                
+                // Wrapped travel (bounded motion)
+                let speed = velocityFractionOfC * 300 * (1 / star.depth)
                 let travel = speed * earthTime
+                let wrappedTravel =
+                travel.truncatingRemainder(dividingBy: maxDimension)
                 
-                let wrappedTravel = travel.truncatingRemainder(
-                    dividingBy: max(size.width, size.height)
-                )
-                
-                /// Continuious movement using time
+                // Directional offset
                 let offsetX = star.direction.dx * wrappedTravel
                 let offsetY = star.direction.dy * wrappedTravel
                 
@@ -42,7 +43,7 @@ struct StarfieldView: View {
                 let y = baseY + offsetY
                 
                 let opacity = max(0.3, 1 - star.depth)
-                let radius = max(0.6, 2.8 * (1 - star.depth))
+                let radius = max(0.6, 2.5 * (1 - star.depth))
                 
                 let rect = CGRect(
                     x: x,
@@ -56,10 +57,7 @@ struct StarfieldView: View {
                     with: .color(.white.opacity(opacity))
                 )
             }
-        }.ignoresSafeArea()
+        }
+        .ignoresSafeArea()
     }
 }
-
-//#Preview {
-//    StarfieldView()
-//}
