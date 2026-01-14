@@ -35,9 +35,14 @@ struct StarfieldView: View {
                 let wrappedTravel =
                 travel.truncatingRemainder(dividingBy: maxDimension)
                 
+                let compressedDirection = RelativisticCompression.compress(
+                    direction: star.direction,
+                    velocityFraction: velocityFractionOfC
+                )
+                
                 // Directional offset
-                let offsetX = star.direction.dx * wrappedTravel
-                let offsetY = star.direction.dy * wrappedTravel
+                let offsetX = compressedDirection.dx * wrappedTravel
+                let offsetY = compressedDirection.dy * wrappedTravel
                 
                 let x = baseX + offsetX
                 let y = baseY + offsetY
