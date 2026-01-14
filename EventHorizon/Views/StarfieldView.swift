@@ -25,11 +25,11 @@ struct StarfieldView: View {
             
             for star in stars {
                 
-                // Base position (static distribution)
+                // Static base distribution (stars exist even at rest)
                 let baseX = center.x + star.position.x * size.width * 0.5
                 let baseY = center.y + star.position.y * size.height * 0.5
                 
-                // Wrapped travel (bounded motion)
+                // Bounded travel distance to prevent unbounded growth
                 let speed = velocityFractionOfC * 300 * (1 / star.depth)
                 let travel = speed * earthTime
                 let wrappedTravel =
@@ -40,7 +40,7 @@ struct StarfieldView: View {
                     velocityFraction: velocityFractionOfC
                 )
                 
-                // Directional offset
+                // Directional motion blur aligned with velocity vector
                 let offsetX = compressedDirection.dx * wrappedTravel
                 let offsetY = compressedDirection.dy * wrappedTravel
                 

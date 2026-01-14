@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+// Provides stable star distribution for rendering
 @MainActor
 final class StarfieldViewModel: ObservableObject {
     

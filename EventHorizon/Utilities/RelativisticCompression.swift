@@ -10,6 +10,8 @@ import Foundation
 enum RelativisticCompression{
     
     // Compress a direction vector to wards the forward axis
+    // Approximates relativistic aberration by compressing
+    // direction vectors toward the forward light cone
     
     static func compress(direction: CGVector, velocityFraction: Double) -> CGVector{
         

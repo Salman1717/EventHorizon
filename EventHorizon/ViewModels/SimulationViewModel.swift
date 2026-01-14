@@ -15,7 +15,7 @@ enum SimulationMode{
 
 
 //MARK: Simulation ViewModel
-
+// Owns all time progression and enforces physical constraints
 @MainActor
 final class SimulationViewModel: ObservableObject {
     
@@ -48,7 +48,7 @@ final class SimulationViewModel: ObservableObject {
     
     // MARK: - Logic
     
-    /// Advances the simulation using real elasped time
+    /// Advances simulation time only when running
     func update(currentDate: Date) {
         
         guard mode == .running else{
@@ -93,6 +93,7 @@ final class SimulationViewModel: ObservableObject {
         
     }
     
+    /// Prevents time jump when resuming
     func resume(){
         lastUpdate = Date()
         mode = .running
