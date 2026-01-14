@@ -23,9 +23,12 @@ struct SpaceSceneView: View {
                 
                 
                 VStack(spacing: 24) {
-                    ClockView(title: "Earth Time", time: simVM.earthTime)
-                    ClockView(title: "Traveler Time", time: simVM.travelerTime)
+                    HStack(spacing: 20){
+                        ClockView(title: "Earth Time", time: simVM.earthTime)
+                        ClockView(title: "Traveler Time", time: simVM.travelerTime)
+                    }
                     
+                    Spacer()
                     //                    SpaceAxisView(
                     //                        contractionFactor: viewModel.lengthContraction
                     //                    )
@@ -42,9 +45,19 @@ struct SpaceSceneView: View {
     
     private var velocityControl: some View{
         VStack(spacing: 8){
-            Text("Velocity: \(String(format: "%.3f", simVM.velocityFractionOfC)) c")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Text("Velocity: \(String(format: "%.2f", simVM.velocityFractionOfC * 100))% Speed of Light")
+                .font(.body)
+                .foregroundStyle(LinearGradient(colors: [.blue, .purple], startPoint: .top, endPoint: .bottom))
+                .padding()
+                .background{
+                    RoundedRectangle(cornerRadius: 16)
+                        .foregroundStyle(.blue.opacity(0.2))
+                        .overlay{
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(lineWidth: 1)
+                                .foregroundStyle(.blue)
+                        }
+                }
             
             Slider(
                 value: $simVM.velocityFractionOfC,
@@ -55,25 +68,31 @@ struct SpaceSceneView: View {
     }
     
     private var controlPannel: some View{
-        HStack(spacing: 16){
+        HStack(spacing: 28){
             
-            Button("Pause"){
-                simVM.paused()
+            if simVM.mode == .running{
+                Button(""){
+                    simVM.paused()
+                }
+                .buttonStyle(CustomButtonStyle(image: "pause"))
+            }else{
+                Button(""){
+                    simVM.resume()
+                }
+                .buttonStyle(CustomButtonStyle(image: "play"))
             }
-            .disabled(simVM.mode == .paused)
             
-            Button("Resume"){ 
-                simVM.resume()
-            }
-            .disabled(simVM.mode == .running)
             
-            Button("Step +1s"){
+            
+            Button(""){
                 simVM.step()
             }
+            .buttonStyle(CustomButtonStyle(image: "plus"))
             
             Button("Reset"){
                 simVM.reset()
             }
+            .buttonStyle(CustomButtonStyle(image: "arrow.clockwise"))
             
         }
     }

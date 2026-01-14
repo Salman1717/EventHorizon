@@ -16,16 +16,26 @@ struct ClockView: View {
         VStack(spacing: 8){
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.blue)
             
             Text(TimeFormatter.format(time))
-                .font(.title.monospacedDigit())
-                .foregroundStyle(.white)
+                .font(.title2.monospacedDigit())
+                .foregroundStyle(LinearGradient(colors: [.blue, .purple], startPoint: .top, endPoint: .bottom))
         }
         .padding()
-        .frame(width: 200)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .frame(width: 150)
+        .background(clockBg())
+        
+    }
+    
+    private func clockBg() -> some View{
+        RoundedRectangle(cornerRadius: 16)
+            .foregroundStyle(.blue.opacity(0.2))
+            .overlay{
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(lineWidth: 1)
+                    .foregroundStyle(.blue)
+            }
     }
 }
 
