@@ -45,6 +45,30 @@ struct StarfieldView: View {
                 let opacity = max(0.3, 1 - star.depth)
                 let radius = max(0.6, 2.5 * (1 - star.depth))
                 
+                let blurLength = velocityFractionOfC * 40 * (1 - star.depth)
+                
+                if blurLength > 0.5 {
+                    let blurPath = Path { path in
+                        path.move(to: CGPoint(x: x, y: y))
+                        path.addLine(
+                            to: CGPoint(
+                                x: x - star.direction.dx * blurLength,
+                                y: y - star.direction.dy * blurLength
+                            )
+                        )
+                    }
+                    
+                    context.stroke(
+                        blurPath,
+                        with: .color(
+                            DopplerColor.color(
+                                velocityFraction: velocityFractionOfC,
+                                depth: star.depth
+                            )
+                        ),
+                        lineWidth: radius * 0.8)
+                }
+                
                 let rect = CGRect(
                     x: x,
                     y: y,
@@ -54,7 +78,11 @@ struct StarfieldView: View {
                 
                 context.fill(
                     Path(ellipseIn: rect),
-                    with: .color(.white.opacity(opacity))
+                    with: .color(
+                        DopplerColor
+                            .color(velocityFraction: velocityFractionOfC, depth: star.depth)
+                            .opacity(opacity)
+                    )
                 )
             }
         }
